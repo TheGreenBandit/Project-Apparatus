@@ -7,11 +7,11 @@ using HarmonyLib;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static GameObjectManager;
+using static ProjectApparatus.MainConsole;
 using System.Windows.Forms;
 
 namespace ProjectApparatus
 {
-
     internal class Hacks : MonoBehaviour
     {
         private static GUIStyle Style = null;
@@ -73,8 +73,8 @@ namespace ProjectApparatus
                 if (settingsData.b_DisplayDaysLeft && TimeOfDay.Instance)
                     Watermark += $" | Days Left: {TimeOfDay.Instance.daysUntilDeadline}"; ;
             }
-
-            Render.String(Style, 10f, 5f, 150f, Settings.TEXT_HEIGHT, Watermark, GUI.color);
+            if(settingsData.b_DisplayWaterMark)
+                Render.String(Style, 10f, 5f, 150f, Settings.TEXT_HEIGHT, Watermark, GUI.color);
 
             if (Settings.Instance.b_isMenuOpen)
             {
@@ -123,6 +123,8 @@ namespace ProjectApparatus
 
             UI.TabContents("Self", UI.Tabs.Self, () =>
             {
+                UI.Button("test log", "", () => { log("testinglog123"); });
+
                 UI.Checkbox(ref settingsData.b_GodMode, "God Mode", "Prevents you from taking any damage.");
                 UI.Checkbox(ref settingsData.b_Invisibility, "Invisibility", "Players will not be able to see you.");
                 UI.Checkbox(ref settingsData.b_InfiniteStam, "Infinite Stamina", "Prevents you from losing any stamina.");
@@ -520,6 +522,7 @@ namespace ProjectApparatus
 
             UI.TabContents("Settings", UI.Tabs.Settings, () =>
             {
+                UI.Checkbox(ref settingsData.b_DisplayWaterMark, "watermark");
                 UI.Checkbox(ref settingsData.b_Crosshair, "Crosshair", "Displays a crosshair on the screen.");
                 UI.Checkbox(ref settingsData.b_DisplayGroupCredits, "Display Group Credits", "Shows how many credits you have.");
                 UI.Checkbox(ref settingsData.b_DisplayLootInShip, "Display Loot In Ship", "Shows the value of all the items you have gathered in the ship.");
