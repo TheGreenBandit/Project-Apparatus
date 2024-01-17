@@ -33,6 +33,11 @@ namespace ProjectApparatus
                     !plyer.playerUsername.Contains("Player #"));
         }
 
+        string converttohex(int i)
+        {
+            return "0x" + i.ToString("X");
+        }
+
         public void OnGUI()
         {
             if (!Settings.Instance.b_isMenuOpen && Event.current.type != EventType.Repaint)
@@ -106,7 +111,6 @@ namespace ProjectApparatus
 
         private void MenuContent(int windowID)
         {
-
             GUILayout.BeginHorizontal();
             UI.Tab(LocalizationManager.GetString("start"), ref UI.nTab, UI.Tabs.Start);
             UI.Tab(LocalizationManager.GetString("self"), ref UI.nTab, UI.Tabs.Self);
@@ -117,7 +121,6 @@ namespace ProjectApparatus
             UI.Tab(LocalizationManager.GetString("upgrades"), ref UI.nTab, UI.Tabs.Upgrades);
             UI.Tab(LocalizationManager.GetString("settings"), ref UI.nTab, UI.Tabs.Settings);
             GUILayout.EndHorizontal();
-
 
             UI.TabContents(LocalizationManager.GetString("start"), UI.Tabs.Start, () =>
             {   
@@ -138,10 +141,15 @@ namespace ProjectApparatus
             });
 
 
+
             UI.TabContents(LocalizationManager.GetString("self"), UI.Tabs.Self, () =>
             {
-                GUILayout.Label($"feautre working: {Features.ExampleFeature.Instance.value}");
-                UI.Keybind(Features.ExampleFeature.Instance);
+                GUILayout.Label($"feautre working: {Features.Instance.examplefeature.value}");
+                
+                //GUILayout.Label($"hotket working: {PAUtils.GetAsyncKeyState(converttohex(Features.Instance.examplefeature.bind)) != 0}");
+
+                GUILayout.Label($"hotket: {converttohex(Features.Instance.examplefeature.bind)}");
+                UI.Keybind(Features.Instance.examplefeature);
 
                 UI.Checkbox(ref settingsData.b_GodMode, LocalizationManager.GetString("god_mode") , LocalizationManager.GetString("god_mode_descr"));
                 UI.Checkbox(ref settingsData.b_Invisibility, LocalizationManager.GetString("invisibility"), LocalizationManager.GetString("invisibility_desc"));
@@ -787,12 +795,12 @@ namespace ProjectApparatus
 
         public void Update()
         {
-            if (PAUtils.GetAsyncKeyState((int)Keys.Insert))
+            if (PAUtils.GetAsyncKeyState((int)Keys.Insert) != 0)
             {
                 Settings.Instance.SaveSettings();
                 Settings.Instance.b_isMenuOpen = !Settings.Instance.b_isMenuOpen;
             }
-            if (PAUtils.GetAsyncKeyState((int)Keys.Delete))
+            if (PAUtils.GetAsyncKeyState((int)Keys.Delete) != 0)
             {
                 Loader.Unload();
                 StopCoroutine(Instance.CollectObjects());

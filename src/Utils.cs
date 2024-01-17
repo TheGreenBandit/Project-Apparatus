@@ -18,7 +18,7 @@ namespace ProjectApparatus
         static public BindingFlags protectedFlags = (BindingFlags.NonPublic | BindingFlags.Instance);
 
         [DllImport("User32.dll")]
-        public static extern bool GetAsyncKeyState(int key);
+        public static extern short GetAsyncKeyState(int key);
 
         [DllImport("User32.dll")]
         public static extern int MessageBox(IntPtr hWnd, string text, string caption, uint type);

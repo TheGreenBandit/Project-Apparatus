@@ -10,40 +10,22 @@ using UnityEngine.Rendering;
 
 namespace ProjectApparatus
 {
-    public interface IBaseFeature
-    { 
-
-    }
-
     public interface IBindable
     {
         int bind { get; set; }
         bool settingKeybind { get; set; }
-        void OnUpdate();
     }
 
     public class Features
     {
-        ExampleFeature examplefeature = new ExampleFeature();
-
+        public ExampleFeature examplefeature = new ExampleFeature();
         public class ExampleFeature : IBindable
         {
             //base stuff
             public int bind { get; set; }
+            
             public bool settingKeybind { get; set; }
-            public bool m_is_enabled = true;
-
-            public static ExampleFeature Instance //by making it an instance u can add it to the loop that is at the bottom of the file
-            {
-                get
-                {
-                    if (instance == null)
-                    {
-                        instance = new ExampleFeature();
-                    }
-                    return instance;
-                }
-            }
+            public bool m_is_enabled = false;
 
             //feature specific
             public int value = 0;
@@ -54,7 +36,7 @@ namespace ProjectApparatus
             }
             public void OnUpdate()
             {
-                if (PAUtils.GetAsyncKeyState(bind))
+                if (PAUtils.GetAsyncKeyState(Features.Instance.examplefeature.bind) != 0) //todo make this work? 
                 {
                     if (m_is_enabled)
                     {
@@ -64,7 +46,7 @@ namespace ProjectApparatus
                     else
                     {
                         m_is_enabled = true;
-                        OnInit();                     
+                        OnInit();
                     }
                 }
 
@@ -73,7 +55,7 @@ namespace ProjectApparatus
                 if (!m_is_enabled)
                     return;
 
-                if (value < 255)
+                if (value < 255) //this function works but for some reason the bind dont wanna so u cant turn it on
                     value++;
                 else
                     value = 0;
@@ -83,8 +65,6 @@ namespace ProjectApparatus
             {
                 // add stuff to change when disabling, useful for restoring original value of stuff
             }
-
-            private static ExampleFeature instance;
         }
 
         public class ExampleButton : IBindable
@@ -106,7 +86,7 @@ namespace ProjectApparatus
 
             public void OnUpdate()
             {
-                if (PAUtils.GetAsyncKeyState(bind))
+                if (PAUtils.GetAsyncKeyState(bind) != 0)
                     Action();
             }
 
@@ -144,16 +124,16 @@ namespace ProjectApparatus
                 if (!localCollider) return;
 
                 Transform localTransform = GameObjectManager.Instance.localPlayer.transform;
-                localCollider.enabled = !(localTransform && PAUtils.GetAsyncKeyState(bind));
+                localCollider.enabled = !(localTransform && PAUtils.GetAsyncKeyState(bind) != 0);
 
                 if (!localCollider.enabled)
                 {
-                    bool WKey = PAUtils.GetAsyncKeyState((int)Keys.W),
-                        AKey = PAUtils.GetAsyncKeyState((int)Keys.A),
-                        SKey = PAUtils.GetAsyncKeyState((int)Keys.S),
-                        DKey = PAUtils.GetAsyncKeyState((int)Keys.D),
-                        SpaceKey = PAUtils.GetAsyncKeyState((int)Keys.Space),
-                        CtrlKey = PAUtils.GetAsyncKeyState((int)Keys.LControlKey);
+                    bool WKey = PAUtils.GetAsyncKeyState((int)Keys.W) != 0,
+                        AKey = PAUtils.GetAsyncKeyState((int)Keys.A) != 0,
+                        SKey = PAUtils.GetAsyncKeyState((int)Keys.S) != 0,
+                        DKey = PAUtils.GetAsyncKeyState((int)Keys.D) != 0,
+                        SpaceKey = PAUtils.GetAsyncKeyState((int)Keys.Space) != 0,
+                        CtrlKey = PAUtils.GetAsyncKeyState((int)Keys.LControlKey) != 0;
 
                     Vector3 inVec = new Vector3(0, 0, 0);
 
@@ -197,7 +177,7 @@ namespace ProjectApparatus
 
             public void OnUpdate()
             {
-                if (PAUtils.GetAsyncKeyState(bind))
+                if (PAUtils.GetAsyncKeyState(bind) != 0)
                     Action();
             }
 
@@ -415,7 +395,7 @@ namespace ProjectApparatus
                     }
 
                     ThirdpersonUpdate();
-                    if(PAUtils.GetAsyncKeyState(m_bind))
+                    if(PAUtils.GetAsyncKeyState(m_bind) != 0)
                         ThirdpersonCamera.Toggle();
                 }
 
