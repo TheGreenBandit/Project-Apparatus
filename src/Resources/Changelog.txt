@@ -1,4 +1,7 @@
-﻿v1.2.0
+﻿v1.2.1
+• [/] Revamped Keybinds.
+
+v1.2.0
 • [+] Added Invisibility to Self tab.
 • [+] Added Display Loot In Ship to Cheat tab.
 

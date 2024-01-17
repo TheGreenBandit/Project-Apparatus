@@ -12,7 +12,6 @@ using System.Windows.Forms;
 
 namespace ProjectApparatus
 {
-
     internal class Hacks : MonoBehaviour
     {
         private static GUIStyle Style = null;
@@ -94,9 +93,7 @@ namespace ProjectApparatus
             Render.String(Style, 10f, 5f, 150f, Settings.TEXT_HEIGHT, Watermark, GUI.color);
 
             if (Settings.Instance.b_isMenuOpen)
-            {
                 Settings.Instance.windowRect = GUILayout.Window(0, Settings.Instance.windowRect, new GUI.WindowFunction(MenuContent), LocalizationManager.GetString("watermark"), Array.Empty<GUILayoutOption>());
-            }
 
             if (settingsData.b_Crosshair)
             {
@@ -143,6 +140,9 @@ namespace ProjectApparatus
 
             UI.TabContents(LocalizationManager.GetString("self"), UI.Tabs.Self, () =>
             {
+                GUILayout.Label($"feautre working: {Features.ExampleFeature.Instance.value}");
+                UI.Keybind(Features.ExampleFeature.Instance);
+
                 UI.Checkbox(ref settingsData.b_GodMode, LocalizationManager.GetString("god_mode") , LocalizationManager.GetString("god_mode_descr"));
                 UI.Checkbox(ref settingsData.b_Invisibility, LocalizationManager.GetString("invisibility"), LocalizationManager.GetString("invisibility_desc"));
                 UI.Checkbox(ref settingsData.b_InfiniteStam, LocalizationManager.GetString("infinite_stam") , LocalizationManager.GetString("infinite_stam_descr"));
@@ -179,7 +179,7 @@ namespace ProjectApparatus
 
                 UI.Button(LocalizationManager.GetString("respawn"), LocalizationManager.GetString("respawn_descr"), () =>
                 {
-                    Features.Misc.RespawnLocalPlayer();
+                    Features.SelfRevive.Instance.Action();
                 });
 
                 UI.Button(LocalizationManager.GetString("teleport_to_ship"), LocalizationManager.GetString("teleport_to_ship_descr"), () =>
@@ -200,7 +200,6 @@ namespace ProjectApparatus
 
                 GUILayout.BeginHorizontal();
                 UI.Checkbox(ref settingsData.b_Noclip, $"{LocalizationManager.GetString("noclip")} ({settingsData.fl_NoclipSpeed})", LocalizationManager.GetString("noclip_descr"));
-                UI.Keybind(ref settingsData.keyNoclip);
                 GUILayout.EndHorizontal();
                 settingsData.fl_NoclipSpeed = Mathf.RoundToInt(GUILayout.HorizontalSlider(settingsData.fl_NoclipSpeed, 1, 100));
             });
@@ -531,7 +530,7 @@ namespace ProjectApparatus
 
                 GUILayout.BeginHorizontal();
                 GUILayout.Label(LocalizationManager.GetString("thirdperson"));
-                UI.Keybind(ref settingsData.keyThirdperson);
+                //UI.Keybind(ref settingsData.keyThirdperson);
                 GUILayout.EndHorizontal();
 
                 GUILayout.Label($"{LocalizationManager.GetString("distance")} ({settingsData.fl_ThirdpersonDistance})");
@@ -788,12 +787,12 @@ namespace ProjectApparatus
 
         public void Update()
         {
-            if ((PAUtils.GetAsyncKeyState((int)Keys.Insert) & 1) != 0)
+            if (PAUtils.GetAsyncKeyState((int)Keys.Insert))
             {
                 Settings.Instance.SaveSettings();
                 Settings.Instance.b_isMenuOpen = !Settings.Instance.b_isMenuOpen;
             }
-            if ((PAUtils.GetAsyncKeyState((int)Keys.Delete) & 1) != 0)
+            if (PAUtils.GetAsyncKeyState((int)Keys.Delete))
             {
                 Loader.Unload();
                 StopCoroutine(Instance.CollectObjects());
@@ -817,7 +816,7 @@ namespace ProjectApparatus
                         Instance.tvScript.TurnOnTVServerRpc();
                 }
             }
-
+            
             if (Instance.shipTerminal)
             {
                 if (settingsData.b_NoMoreCredits)
@@ -827,8 +826,9 @@ namespace ProjectApparatus
                     Instance.shipTerminal.PlayTerminalAudioServerRpc(1);
             }
 
-            Features.Possession.UpdatePossession();
-            Features.Misc.Noclip();
+            Features.Instance.UpdateAll();
+
+            Features.Possession.UpdatePossession(); //also not doing this
 
             if (settingsData.b_RemoveVisor) 
                 Instance.localVisor?.SetActive(false);
