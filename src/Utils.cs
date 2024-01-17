@@ -255,7 +255,7 @@ namespace ProjectApparatus
                 Event e = Event.current;
                 if (e.isKey && e.type == EventType.KeyDown)
                 {
-                    bind.bind = ((int)e.keyCode);
+                    bind.bind = e.keyCode;
                     bind.settingKeybind = false;
                 }
             }

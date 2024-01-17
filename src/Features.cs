@@ -12,7 +12,7 @@ namespace ProjectApparatus
 {
     public interface IBindable
     {
-        int bind { get; set; }
+        KeyCode bind { get; set; }
         bool settingKeybind { get; set; }
     }
 
@@ -22,7 +22,7 @@ namespace ProjectApparatus
         public class ExampleFeature : IBindable
         {
             //base stuff
-            public int bind { get; set; }
+            public KeyCode bind { get; set; }
             
             public bool settingKeybind { get; set; }
             public bool m_is_enabled = false;
@@ -36,7 +36,8 @@ namespace ProjectApparatus
             }
             public void OnUpdate()
             {
-                if (PAUtils.GetAsyncKeyState(Features.Instance.examplefeature.bind) != 0) //todo make this work? 
+                Event e = Event.current;
+                if (e.keyCode == bind) //todo why buggy, only way this will work
                 {
                     if (m_is_enabled)
                     {
@@ -70,7 +71,7 @@ namespace ProjectApparatus
         public class ExampleButton : IBindable
         {
             //base stuff
-            public int bind { get; set; }
+            public KeyCode bind { get; set; }
             public bool settingKeybind { get; set; }
             public static ExampleButton Instance
             {
@@ -86,7 +87,7 @@ namespace ProjectApparatus
 
             public void OnUpdate()
             {
-                if (PAUtils.GetAsyncKeyState(bind) != 0)
+                if (PAUtils.GetAsyncKeyState((int)bind) != 0)
                     Action();
             }
 
@@ -100,7 +101,7 @@ namespace ProjectApparatus
         public class NoClip : IBindable
         {
             //base stuff
-            public int bind { get; set; }
+            public KeyCode bind { get; set; }
             public bool settingKeybind { get; set; }
 
             public static NoClip Instance //by making it an instance u can add it to the loop that is at the bottom of the file
@@ -124,7 +125,7 @@ namespace ProjectApparatus
                 if (!localCollider) return;
 
                 Transform localTransform = GameObjectManager.Instance.localPlayer.transform;
-                localCollider.enabled = !(localTransform && PAUtils.GetAsyncKeyState(bind) != 0);
+                localCollider.enabled = !(localTransform && PAUtils.GetAsyncKeyState((int)bind) != 0);
 
                 if (!localCollider.enabled)
                 {
@@ -161,7 +162,7 @@ namespace ProjectApparatus
         public class SelfRevive : IBindable
         {
             //base stuff
-            public int bind { get; set; }
+            public KeyCode bind { get; set; }
             public bool settingKeybind { get; set; }
             public static SelfRevive Instance
             {
@@ -177,7 +178,7 @@ namespace ProjectApparatus
 
             public void OnUpdate()
             {
-                if (PAUtils.GetAsyncKeyState(bind) != 0)
+                if (PAUtils.GetAsyncKeyState((int)bind) != 0)
                     Action();
             }
 

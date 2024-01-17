@@ -33,11 +33,6 @@ namespace ProjectApparatus
                     !plyer.playerUsername.Contains("Player #"));
         }
 
-        string converttohex(int i)
-        {
-            return "0x" + i.ToString("X");
-        }
-
         public void OnGUI()
         {
             if (!Settings.Instance.b_isMenuOpen && Event.current.type != EventType.Repaint)
@@ -140,15 +135,13 @@ namespace ProjectApparatus
                 GUILayout.Label(Settings.Credits.credits.ToString());
             });
 
-
-
             UI.TabContents(LocalizationManager.GetString("self"), UI.Tabs.Self, () =>
             {
                 GUILayout.Label($"feautre working: {Features.Instance.examplefeature.value}");
                 
-                //GUILayout.Label($"hotket working: {PAUtils.GetAsyncKeyState(converttohex(Features.Instance.examplefeature.bind)) != 0}");
+                //GUILayout.Label($"hotket working: {PAUtils.GetAsyncKeyState((int)Features.Instance.examplefeature.bind) != 0}");
 
-                GUILayout.Label($"hotket: {converttohex(Features.Instance.examplefeature.bind)}");
+                GUILayout.Label($"hotket: {Features.Instance.examplefeature.bind}");
                 UI.Keybind(Features.Instance.examplefeature);
 
                 UI.Checkbox(ref settingsData.b_GodMode, LocalizationManager.GetString("god_mode") , LocalizationManager.GetString("god_mode_descr"));
@@ -252,6 +245,7 @@ namespace ProjectApparatus
                             Instance.shipTerminal.groupCredits += int.Parse(settingsData.str_MoneyToGive);
                             Instance.shipTerminal.SyncGroupCreditsServerRpc(Instance.shipTerminal.groupCredits, 
                                 Instance.shipTerminal.numberOfItemsInDropship);
+                            Instance.shipTerminal.SyncTerminalValuesServerRpc();
                         }
                     });
 
