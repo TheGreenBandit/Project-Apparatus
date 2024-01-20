@@ -20,14 +20,6 @@ namespace ProjectApparatus
         [DllImport("User32.dll")]
         public static extern short GetAsyncKeyState(int key);
 
-        [DllImport("User32.dll")]
-        public static extern int MessageBox(IntPtr hWnd, string text, string caption, uint type);
-
-        public static void ShowMessageBox(string message)
-        {
-            MessageBox(IntPtr.Zero, message, "Project Apparatus", 0);
-        }
-
         public static bool IsPlayerValid(PlayerControllerB plyer)
         {
             return (plyer != null &&
@@ -246,26 +238,45 @@ namespace ProjectApparatus
             GUI.color = Color.white;
             GUI.Label(new Rect(tooltipRect.x + 5f, tooltipRect.y + 5f, tooltipWidth - 10f, tooltipHeight - 10f), strTooltip);
         }
-        public static void Keybind(IBindable bind)
-        {
-            if (bind.settingKeybind)
-            {
-                UI.Button("Press any button", "", () => { });
 
+        public static void Keybind(IBind Bind, ref int Key)
+        {
+            if(Bind.settingKeybind)
+            {
+                GUILayout.Button("Press any button to bind");
                 Event e = Event.current;
-                if (e.isKey && e.type == EventType.KeyDown)
+                    
+                if ((e.isMouse || e.isKey) && e.keyCode != KeyCode.Escape)
                 {
-                    bind.bind = e.keyCode;
-                    bind.settingKeybind = false;
+                    Key = (int)e.keyCode;
+                    Bind.settingKeybind = false;
                 }
             }
             else
             {
-                string str = bind.bind != 0 ? ((KeyCode)bind.bind).ToString() : "Unbound";
-                UI.Button(str, "Press to set a bind", () => bind.settingKeybind = true);
+                UI.Button(Key.ToString(), "Press to change keybind", () => Bind.settingKeybind = true);
+            }
+
+            GUILayout.Button(Key.ToString());
+            Rect lastRect = GUILayoutUtility.GetLastRect();
+            Event guiEvent = Event.current;
+
+            if (lastRect.Contains(guiEvent.mousePosition))
+            {
+                for (int i = 0; i < 256; i++)
+                {
+                    if (i == (int)Keys.LButton
+                        || i == (int)Keys.Insert) continue;
+                    if (i > 6 && Event.current.type != EventType.KeyDown) continue;
+
+                    if ((PAUtils.GetAsyncKeyState(i) & 1) != 0)
+                    {
+                        Key = (i == (int)Keys.Escape) ? 0 : i;
+                        break;
+                    }
+                }
             }
         }
-
         public static Texture2D MakeTexture(int width, int height, Color color)
         {
             Color[] pixels = new Color[width * height];

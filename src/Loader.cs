@@ -1,4 +1,5 @@
-﻿using Mono.Cecil;
+﻿using HarmonyLib;
+using Mono.Cecil;
 using System;
 using System.IO;
 using System.Reflection;
@@ -44,7 +45,8 @@ namespace ProjectApparatus
 
         public static void Unload()
 		{
-			UnityEngine.Object.Destroy(Loader.Hack);
+            new Harmony("com.waxxyTF2.ProjectApparatus").UnpatchAll();
+            UnityEngine.Object.Destroy(Loader.Hack);
             UnityEngine.Object.Destroy(Loader.Thirdperson);
         }
 

@@ -637,6 +637,24 @@ namespace ProjectApparatus.Lang {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Display Watermark.
+        /// </summary>
+        internal static string display_watermark {
+            get {
+                return ResourceManager.GetString("display_watermark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Toggles the visibility of the watermark on the top left..
+        /// </summary>
+        internal static string display_watermark_desc {
+            get {
+                return ResourceManager.GetString("display_watermark_desc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Show Value.
         /// </summary>
         internal static string display_worth {

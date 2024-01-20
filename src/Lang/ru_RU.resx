@@ -306,6 +306,12 @@
   <data name="display_speaking_esp_descr" xml:space="preserve">
     <value>Показывает, говорит ли игрок.</value>
   </data>
+  <data name="display_watermark" xml:space="preserve">
+    <value />
+  </data>
+  <data name="display_watermark_desc" xml:space="preserve">
+    <value />
+  </data>
   <data name="display_worth" xml:space="preserve">
     <value>Показывать стоимость</value>
   </data>

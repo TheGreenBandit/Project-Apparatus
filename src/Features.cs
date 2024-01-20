@@ -1,29 +1,28 @@
 ﻿using Dissonance;
 using GameNetcodeStuff;
 using HarmonyLib;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
+using Unity.Collections;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 
 namespace ProjectApparatus
 {
-    public interface IBindable
+    public interface IBind
     {
-        KeyCode bind { get; set; }
         bool settingKeybind { get; set; }
     }
 
     public class Features
     {
-        public ExampleFeature examplefeature = new ExampleFeature();
-        public class ExampleFeature : IBindable
-        {
-            //base stuff
-            public KeyCode bind { get; set; }
-            
+        public ExampleFeature exampleFeature = new ExampleFeature();
+        public class ExampleFeature : IBind
+        {        
             public bool settingKeybind { get; set; }
             public bool m_is_enabled = false;
 
@@ -32,12 +31,11 @@ namespace ProjectApparatus
 
             public void OnInit()
             {
-                // add stuff to change when starting, useful for storing original value of stuff
+                // add stuff to change when enabling, useful for restoring original value of stuff
             }
             public void OnUpdate()
             {
-                Event e = Event.current;
-                if (e.keyCode == bind) //todo why buggy, only way this will work
+                if ((PAUtils.GetAsyncKeyState(Settings.Instance.settingsData.keyExampleFeature) != 0)) //todo why buggy, only way this will work
                 {
                     if (m_is_enabled)
                     {
@@ -67,27 +65,15 @@ namespace ProjectApparatus
                 // add stuff to change when disabling, useful for restoring original value of stuff
             }
         }
-
-        public class ExampleButton : IBindable
+        public ExampleButton exampleButton = new ExampleButton();
+        public class ExampleButton : IBind
         {
             //base stuff
-            public KeyCode bind { get; set; }
             public bool settingKeybind { get; set; }
-            public static ExampleButton Instance
-            {
-                get
-                {
-                    if (instance == null)
-                    {
-                        instance = new ExampleButton();
-                    }
-                    return instance;
-                }
-            }
 
             public void OnUpdate()
             {
-                if (PAUtils.GetAsyncKeyState((int)bind) != 0)
+                if (PAUtils.GetAsyncKeyState(Settings.Instance.settingsData.keyExampleButton) != 0)
                     Action();
             }
 
@@ -95,26 +81,13 @@ namespace ProjectApparatus
             {
 
             }
-            private static ExampleButton instance;
         }
 
-        public class NoClip : IBindable
+        public NoClip noClip = new NoClip();
+        public class NoClip : IBind
         {
             //base stuff
-            public KeyCode bind { get; set; }
             public bool settingKeybind { get; set; }
-
-            public static NoClip Instance //by making it an instance u can add it to the loop that is at the bottom of the file
-            {
-                get
-                {
-                    if (instance == null)
-                    {
-                        instance = new NoClip();
-                    }
-                    return instance;
-                }
-            }
 
             public void OnUpdate()
             {
@@ -125,7 +98,7 @@ namespace ProjectApparatus
                 if (!localCollider) return;
 
                 Transform localTransform = GameObjectManager.Instance.localPlayer.transform;
-                localCollider.enabled = !(localTransform && PAUtils.GetAsyncKeyState((int)bind) != 0);
+                localCollider.enabled = !(localTransform && PAUtils.GetAsyncKeyState(Settings.Instance.settingsData.keyNoclip) != 0);
 
                 if (!localCollider.enabled)
                 {
@@ -155,37 +128,35 @@ namespace ProjectApparatus
                         * (Settings.Instance.settingsData.fl_NoclipSpeed * Time.deltaTime);
                 }
             }
-
-            private static NoClip instance;
         }
 
-        public class SelfRevive : IBindable
+        public NonVoidKeys nonVoidKeys = new NonVoidKeys();
+        public class NonVoidKeys
+        {
+            public void OnUpdate()
+            {
+                SettingsData data = Settings.Instance.settingsData; //simplify writing
+                //add keys that have no feature here, for example godmode uses patches to work so it will go here
+                if (PAUtils.GetAsyncKeyState(data.keyGodmode) != 0) 
+                    data.b_GodMode = !data.b_GodMode;
+            }
+        }
+
+        public SelfRevive selfRevive = new SelfRevive();
+        public class SelfRevive : IBind
         {
             //base stuff
-            public KeyCode bind { get; set; }
             public bool settingKeybind { get; set; }
-            public static SelfRevive Instance
-            {
-                get
-                {
-                    if (instance == null)
-                    {
-                        instance = new SelfRevive();
-                    }
-                    return instance;
-                }
-            }
 
             public void OnUpdate()
             {
-                if (PAUtils.GetAsyncKeyState((int)bind) != 0)
+                if (PAUtils.GetAsyncKeyState(Settings.Instance.settingsData.keySelfRevive) != 0)
                     Action();
             }
 
             public void Action()
             {
                 PlayerControllerB localPlayer = GameObjectManager.Instance.localPlayer;
-                if (!localPlayer) return;
 
                 StartOfRound.Instance.allPlayersDead = false;
                 localPlayer.ResetPlayerBloodObjects(localPlayer.isPlayerDead);
@@ -295,7 +266,6 @@ namespace ProjectApparatus
                 StartOfRound.Instance.UpdatePlayerVoiceEffects();
                 StartOfRound.Instance.shipAnimator.ResetTrigger("ShipLeave");
             }
-            private static SelfRevive instance;
         }
 
         public class Thirdperson : MonoBehaviour // credits: https://thunderstore.io/c/lethal-company/p/Verity/3rdPerson/
@@ -371,11 +341,9 @@ namespace ProjectApparatus
                 UnityEngine.Object.DontDestroyOnLoad(ThirdpersonCamera);
             }
 
-            public class ThirdpersonCamera : MonoBehaviour //dont feel like fucking with this to make it match
+            public class ThirdpersonCamera : MonoBehaviour, IBind
             {
-                public int m_bind { get; set; }
-                public bool m_setting_keybind { get; set; }
-
+                public bool settingKeybind { get; set; }
                 private void Awake()
                 {
                     ThirdpersonCamera._camera = base.gameObject.AddComponent<Camera>();
@@ -396,7 +364,7 @@ namespace ProjectApparatus
                     }
 
                     ThirdpersonUpdate();
-                    if(PAUtils.GetAsyncKeyState(m_bind) != 0)
+                    if(PAUtils.GetAsyncKeyState(Settings.Instance.settingsData.keyNoclip) != 0)
                         ThirdpersonCamera.Toggle();
                 }
 
@@ -558,12 +526,13 @@ namespace ProjectApparatus
                 return instance;
             }
         }
-        public void UpdateAll()
+        public void UpdateAll()//where you include the updating
         {
-            SelfRevive.Instance.OnUpdate();
-            NoClip.Instance.OnUpdate();
-            examplefeature.OnUpdate();
-            ExampleButton.Instance.OnUpdate();
+            selfRevive.OnUpdate();
+            noClip.OnUpdate();
+            nonVoidKeys.OnUpdate();
+            exampleFeature.OnUpdate(); 
+            exampleButton.OnUpdate();
         }
         private static Features instance;
     }

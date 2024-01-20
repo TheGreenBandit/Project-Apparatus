@@ -1,8 +1,12 @@
 using GameNetcodeStuff;
+using HarmonyLib;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
+using Unity.Services.Authentication;
 using UnityEngine;
+using UnityEngine.Diagnostics;
 
 public class GameObjectManager
 {
@@ -20,6 +24,7 @@ public class GameObjectManager
 
     public const float CollectionInterval = 3f;
 
+    public List<GameObject> spawnedObjects = new List<GameObject>();
     public List<GrabbableObject> items = new List<GrabbableObject>();
     public List<Landmine> landmines = new List<Landmine>();
     public List<Turret> turrets = new List<Turret>();
@@ -44,6 +49,38 @@ public class GameObjectManager
 
     public int shipValue = 0;
 
+    public void spawnObject(string name, Vector3 pos)
+    {
+        foreach (Item item in StartOfRound.Instance.allItemsList.itemsList)
+        {
+            if (item.name == name)
+            {
+                GameObject obj = UnityEngine.Object.Instantiate(item.spawnPrefab, pos, Quaternion.identity, StartOfRound.Instance.propsContainer);
+                //todo look into networkspawnmanager to fix non host spawning
+                //foreach (PlayerControllerB player in players)
+                //{
+                    //if (player.IsHost)
+                    //{
+                        //i think by doing this in a patch, will make it so non host can spawn
+                        //obj.GetComponent<NetworkObject>().OwnerClientId = player.playerClientId;
+                        obj.GetComponent<NetworkObject>().Spawn();
+                    //}
+                //}
+
+                spawnedObjects.AddItem(obj);
+            }
+        }
+    }
+    public void deleteObject(string name)
+    {
+        foreach (GameObject obj in spawnedObjects)
+        {
+            if (obj.name == name)
+                obj.GetComponent<NetworkObject>().Despawn();
+        }
+    }
+
+
     public IEnumerator CollectObjects()
     {
         while (true)
@@ -64,7 +101,7 @@ public class GameObjectManager
 
             shipValue = 0;
             foreach (GrabbableObject item in Instance.items)
-                if (!item.heldByPlayerOnServer && item.isInShipRoom && item.name != "ClipboardManual" && item.name != "StickyNoteItem")
+                if (!item.heldByPlayerOnServer && item.isInShipRoom && item.name != "Clipboard" && item.name != "Sticky Note")
                     shipValue += item.scrapValue;
 
             yield return new WaitForSeconds(CollectionInterval);

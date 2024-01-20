@@ -637,6 +637,24 @@ namespace ProjectApparatus.Lang {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string display_watermark {
+            get {
+                return ResourceManager.GetString("display_watermark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string display_watermark_desc {
+            get {
+                return ResourceManager.GetString("display_watermark_desc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Показывать стоимость.
         /// </summary>
         internal static string display_worth {

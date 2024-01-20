@@ -306,6 +306,12 @@
   <data name="display_speaking_esp_descr" xml:space="preserve">
     <value>Shows if the player is speaking.</value>
   </data>
+  <data name="display_watermark" xml:space="preserve">
+    <value>Display Watermark</value>
+  </data>
+  <data name="display_watermark_desc" xml:space="preserve">
+    <value>Toggles the visibility of the watermark on the top left.</value>
+  </data>
   <data name="display_worth" xml:space="preserve">
     <value>Show Value</value>
   </data>

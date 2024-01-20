@@ -12,6 +12,13 @@ namespace ProjectApparatus
     {
         public readonly string version = "1.2.0";
 
+        public int keyExampleFeature = new int();
+        public int keyExampleButton = new int();
+        public int keySelfRevive = new int();
+        public int keyGodmode = new int();
+        public int keyNoclip = new int();
+        public int keyThirdperson = new int();
+
         /* ESP */
         public bool b_EnableESP;
         public bool b_ItemESP;
@@ -75,6 +82,7 @@ namespace ProjectApparatus
         public bool b_DisableFog, b_DisableBloom, b_DisableDepthOfField, b_DisableVignette, b_DisableFilmGrain, b_DisableExposure;
 
         /* Settings*/
+        public bool b_DisplayWaterMark = true;
         public bool b_DisplayGroupCredits = true;
         public bool b_DisplayLootInShip = true;
         public bool b_DisplayQuota = true;
@@ -96,9 +104,6 @@ namespace ProjectApparatus
         public Color c_smallLoot = new Color(0.518f, 0.682f, 0.729f, 1f);
         public Color c_medLoot = new Color(0.5f, 0.816f, 1f, 1f);
         public Color c_bigLoot = new Color(1f, 0.629f, 1f, 1f);
-
-        public int keyNoclip = new int();
-        public int keyThirdperson = new int();
     }
 
     public class Settings
